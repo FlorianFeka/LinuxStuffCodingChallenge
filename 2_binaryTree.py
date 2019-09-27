@@ -1,3 +1,17 @@
+# Given the root to a binary tree, implement serialize(root),
+# which serializes the tree into a string, and deserialize(s),
+# which deserializes the string back into the tree.
+
+# For example, given the following Node class
+
+# class Node: def init(self, val, left=None, right=None):
+#     self.val = val self.left = left self.right = right 
+
+# The following test should pass:
+
+# node = Node('root', Node('left', Node('left.left')), Node('right'))
+# assert deserialize(serialize(node)).left.left.val == 'left.left'
+
 class Node:
     depth = 0
     def __init__(self, val=None, left=None, right=None):
@@ -9,12 +23,16 @@ class Node:
         self.left = left
         self.right = right
     
-    def serialize(self):
-        string = ''+str(self.val)+'-'
+    def serialize(self, depth=None):
+        string = str(self.val)+'-'
         if(self.left is not None):
-            string += f'l/{self.depth}#'+self.left.serialize()
+            string += f'l/{self.depth}#'+self.left.serialize(self.depth)
         if(self.right is not None):
-            string += f'r/{self.depth}#'+self.right.serialize()
+            string += f'r/{self.depth}#'+self.right.serialize(self.depth)
+        if(depth is not None):
+            dif = self.depth-depth
+            for i in range(0,dif):
+                string += '-'
         return string
 
     def addDepth(self):
@@ -43,6 +61,8 @@ def deserializePart(base, nextPos, parentNode):
     if(len(base)<=nextPos):
         return
     if(base[nextPos] == ''):
+        nextPos += 1
+        deserializePart(base, nextPos, parentNode)
         return
     part = base[nextPos]
     nextPos += 1
@@ -70,16 +90,3 @@ print(nodeStr)
 n = deserialize(nodeStr)
 print(n.serialize())
 
-# Given the root to a binary tree, implement serialize(root),
-# which serializes the tree into a string, and deserialize(s),
-# which deserializes the string back into the tree.
-
-# For example, given the following Node class
-
-# class Node: def init(self, val, left=None, right=None):
-#     self.val = val self.left = left self.right = right 
-
-# The following test should pass:
-
-# node = Node('root', Node('left', Node('left.left')), Node('right'))
-# assert deserialize(serialize(node)).left.left.val == 'left.left'
