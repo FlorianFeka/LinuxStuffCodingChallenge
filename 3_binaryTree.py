@@ -24,19 +24,19 @@ class Node:
         self.right = right
     
     def serialize(self, depth=None):
-        string = str(self.val)+'-'
+        string = f'{self.depth}#' + str(self.val)
         if(self.left is not None):
-            string += f'l/{self.depth}#'+self.left.serialize(self.depth)
+            string += f'-l/'+self.left.serialize(self.depth)
         if(self.right is not None):
-            string += f'r/{self.depth}#'+self.right.serialize(self.depth)
-        if(depth is not None):
-            dif = self.depth-depth
-            for i in range(0,dif):
-                string += '-'
+            string += f'-r/'+self.right.serialize(self.depth)
         return string
 
     def addDepth(self):
         self.depth += 1
+        if(self.left is not None):
+            self.left.addDepth()
+        if(self.right is not None):
+            self.right.addDepth()
 
     def setVal(self, val):
         self.val = val
@@ -54,7 +54,7 @@ def deserialize(string=None, base=None, nextPos=None, parentNode=None):
     base = string.split('-')
     rootNode = Node(base[0])
     deserializePart(base, 1, rootNode)
-    return rootNode;
+    return rootNode
 
 
 def deserializePart(base, nextPos, parentNode):
@@ -62,7 +62,6 @@ def deserializePart(base, nextPos, parentNode):
         return
     if(base[nextPos] == ''):
         nextPos += 1
-        deserializePart(base, nextPos, parentNode)
         return
     part = base[nextPos]
     nextPos += 1
@@ -87,6 +86,6 @@ node = Node('root', Node('left', Node('left.left'), Node('right.right')), Node('
 
 nodeStr = node.serialize()
 print(nodeStr)
-n = deserialize(nodeStr)
-print(n.serialize())
+# n = deserialize(nodeStr)
+# print(n.serialize())
 
